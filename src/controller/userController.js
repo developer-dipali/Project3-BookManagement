@@ -83,8 +83,11 @@ const loginUser = async function (req, res) {
     if (!email) return res.status(400).send({ msg: "email required" })
     let password = data.password
     if (!password) return res.status(400).send({ msg: "password required" })
-    let login = await userModel.findOne({ email: email, password: password, isDeleted: false })
-    if (!login) return res.stauts(400).send({ msg: "email or password does not match" })
+    let login = await userModel.findOne({ email: email, password: password })
+   // console.log(login)
+    if (!login) return res.status(400).send({ msg: "email or password does not match" })
+
+
 
   var token = jwt.sign({
     // "id": login._id, "iat": (new Date().getTime())},
@@ -95,7 +98,7 @@ const loginUser = async function (req, res) {
 
 
         // {let d =new Date()
-        // userId : login._id.toString(),
+       userId : login._id.toString(),
         project:"book_management",
         organization:"functionUp"
       }, "functionUp_uranium",{expiresIn:"2m"});
@@ -109,18 +112,3 @@ catch (err) {
 
 
 module.exports = { createUser, loginUser }
-
-
-
-
-
-// title: { type: String, required: true, enum: ['Mr', 'Mrs', 'Miss'] },
-// name: { type: String, required: true },
-// phone: { type: String, required: true, unique: true },
-// email: { type: String, required: true, unique: true },
-// password: { type: String, required: true, minlength: 8, maxlength: 15 },
-// address: {
-//     street: { type: String },
-//     city: { type: String },
-//     pincode: { type: String }
-// }
