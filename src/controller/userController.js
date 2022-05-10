@@ -68,8 +68,6 @@ const createUser= async function(req,res){
   return res.status(400).send({status: false,msg: "Please enter your pincode Name"})
 
 
-
-
     let saveUser=await userModel.create(data)
     res.status(201).send({status:true, msg:"User created successfully", data:saveUser})
 }
