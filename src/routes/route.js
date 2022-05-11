@@ -7,7 +7,7 @@ const mw =require("../validator/middleware")
 
 router.post("/register",UserController.createUser)
 router.post("/logIn",UserController.loginUser)
-router.post("/books",bookController.createBook)
-router.get("/books",mw.authorization,bookController.getBooks)
+router.post("/books",mw.authentication,bookController.createBook)
+router.get("/books",mw.authentication,bookController.getBooks)
 router.delete("/delete/:bookId",mw.authorization,bookController.deletedBook)
 module.exports = router;
