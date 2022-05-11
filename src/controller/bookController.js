@@ -3,20 +3,34 @@ const { send } = require('process')
 const review = require("../model/review")
 const validator = require("../validator/validator.js")
 const bookModel = require("../model/bookModel")
+const moment =require ('moment')
+const jwt = require("jsonwebtoken")
 
 const createBook = async function (req, res) {
 
-    try {
-        let data = req.body
-        if (!Object.keys(data).length) return res.status(400).send({ msg: "enter the all data" })
-        if (!data.title) return res.status(400).send({ msg: "title required" })
-        if (!data.userId) return res.status(400).send({ msg: "userId required" })
-        if (!data.category) return res.status(400).send({ msg: "category required" })
-        if (!data.subcategory) return res.status(400).send({ msg: "subcategory required" })
-        if (!data.excerpt) return res.status(400).send({ msg: "need to fill it" })
+    // try {
+    //     let data = req.body
+    //     if (!Object.keys(data).length) return res.status(400).send({ msg: "enter the all data" })
+    //     if (!data.title) return res.status(400).send({ msg: "title required" })
+    //     if (!data.userId) return res.status(400).send({ msg: "userId required" })
+    //     if (!data.category) return res.status(400).send({ msg: "category required" })
+    //     if (!data.subcategory) return res.status(400).send({ msg: "subcategory required" })
+    //     if (!data.excerpt) return res.status(400).send({ msg: "need to fill it" })
 
-        let title = await bookModel.findOne({ title: data.title })
-        if (title) return res.status(400).send({ msg: "title already exists" })
+    //     let title = await bookModel.findOne({ title: data.title })
+    //     if (title) return res.status(400).send({ msg: "title already exists" })
+try{
+    let data =req.body
+    // ________________________validation____________________
+    if(!Object.keys(data).length) return res.status(400).send({msg:"enter the all data"})
+    if(!data.title) return res.status(400).send({msg:"title required"})
+    if(!data.userId) return  res.status(400).send({msg:"userId required"})
+    if(!data.category) return  res.status(400).send({msg:"category required"})
+    if(!data.subcategory) return  res.status(400).send({msg:"subcategory required"})
+    if(!data.excerpt) return res.status(400).send({msg:"need to fill it"})
+
+let title = await bookModel.findOne({title:data.title})
+if(title) return  res.status(400).send({msg:"title already exists"})
 
 
         if (!data.ISBN) return res.status(400).send({})
@@ -29,8 +43,31 @@ const createBook = async function (req, res) {
     catch (error) {
         res.status(500).send({ msg: error.message })
     }
+};
+//🐶🐶🐶🐶🐶🐶🐶getbooks by query param🐶🐶🐶🐶🐶🐶🐶🐶
+const getBooks = async function(req,res){
+ try{   let data =req.query
+    if(!data) return res.status(400).send({msg:"data is missing"})
+    let a =data.category
+    findData = await bookModel.findOne({$or:
+        [{userId:data.userId},{category:a},{subcategory:data.subcategory}]})
+    if(!findData) return res.status(400).send({msg:"input data is incorrect"})   
+       // console.log(findData)
+ res.status(200).send({msg:findData})       
 }
+catch(error){
+    res.status(500).send({msg:error.message})}
+};
+//🐨🐨🐨🐨🐨🐨🐨🐨 delete=true🐨🐨🐨🐨🐨🐨🐨🐨🐨🐨
+const deletedBook = async function(req,res){
+ try{
 
+    let data = req.params.bookId
+   let dBook = await bookModel.findByIdAndUpdate({_id:data},{$set:{isDeleted:true,deletedAt:Date()}},{new:true})
+   res.status(200).send({data:dBook})
+}
+catch(err){res.status(500).send(err.message)}
+};
 
 //============================get book by Id=====================//
 let getbookbyId = async function (req, res) {
@@ -38,7 +75,7 @@ let getbookbyId = async function (req, res) {
         let bookId = req.params.bookId;
      console.log(bookId)
 
-        if (bookId) return res.status(400).send({ status: false, msg: "enter blog id in params" })
+        //if (!bookId) return res.status(400).send({ status: false, msg:"enter blog id in params"})
 
        
         if (!validator.isValidObjectId(bookId)) {
@@ -147,4 +184,5 @@ const updateBook = async function (req, res) {
 
 
 
-module.exports = { createBook, getbookbyId, updateBook }
+module.exports = { createBook, getbookbyId, updateBook,getBooks,deletedBook }
+// module.exports={createBook,getBooks,deletedBook}
