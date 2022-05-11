@@ -101,7 +101,7 @@ const loginUser = async function (req, res) {
        userId : login._id.toString(),
         project:"book_management",
         organization:"functionUp"
-      }, "functionUp_uranium",{expiresIn:"2m"});
+      }, "functionUp_uranium",{expiresIn:"60m"});
 res.setHeader("my-api-key", token )
 res.status(200).send({ status: true, msg: "login successfull", email, password, data: token })
 }

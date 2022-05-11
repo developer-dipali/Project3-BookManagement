@@ -3,7 +3,7 @@ const mongoose =require('mongoose')
 const ObjectId = mongoose.Schema.Types.ObjectId
 
 const bookSchema= new mongoose.Schema({
-    title: {type:String,require: true, unique:true},
+    title: {type:String,require: true, unique:true, trim:true},
     excerpt: {type:String,require: true}, 
     userId: {type:ObjectId,require: true, ref:'user'},
     ISBN: {type:String,require: true, unique:true},

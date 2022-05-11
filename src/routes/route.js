@@ -8,5 +8,6 @@ const mw =require("../validator/middleware")
 router.post("/register",UserController.createUser)
 router.post("/logIn",UserController.loginUser)
 router.post("/books",bookController.createBook)
+router.put("/books/:bookId",bookController.updateBook)
 
 module.exports = router;
