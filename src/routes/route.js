@@ -9,7 +9,7 @@ router.post("/register",UserController.createUser)
 router.post("/logIn",UserController.loginUser)
 router.post("/books",bookController.createBook)
 router.get("/books/:bookId",bookController.getbookbyId)
-router.put("/books/:bookId",bookController.updateBook)
+router.put("/books/:bookId",mw.authorization,bookController.updateBook)
 module.exports = router;
 
 ////=====
