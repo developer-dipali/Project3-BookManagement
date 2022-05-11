@@ -23,6 +23,7 @@
     "jsonwebtoken": "^8.5.1",
     "model": "^6.0.1",
     "module": "^1.2.5",
+    "moment": "^2.29.3",
     "mongoose": "^6.3.2",
     "node": "^17.7.2",
     "nodemon": "^2.0.16"
