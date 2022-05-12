@@ -8,6 +8,8 @@ const mw =require("../validator/middleware")
 router.post("/register",UserController.createUser)
 router.post("/logIn",UserController.loginUser)
 router.post("/books",bookController.createBook)
-router.put("/books/:bookId",bookController.updateBook)
-
+router.get("/books/:bookId",bookController.getbookbyId)
+router.put("/books/:bookId",mw.authorization,bookController.updateBook)
+router.get("/books",mw.authorization,bookController.getBooks)
+router.delete("/delete/:bookId",mw.authorization,bookController.deletedBook)
 module.exports = router;

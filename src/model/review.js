@@ -7,7 +7,7 @@ const reviewSchema = mongoose.Schema({
     reviewedAt: {type:Date,require: true},
     rating : {type:Number, minlength: 1, maxlength: 5, require:true},
     review : {type:String},
-    isDeleted: {type:Boolean, default: false}
-},timestamps())
+    isDeleted: {type: Boolean, default: false}
+},{timestamps:true});
 
 module.exports=mongoose.model('review',reviewSchema)
