@@ -12,8 +12,10 @@ router.post("/logIn",UserController.loginUser)
 router.post("/books",bookController.createBook)
 router.get("/books/:bookId",mw.authentication,bookController.getbookbyId)
 router.put("/books/:bookId",mw.authorization,bookController.updateBook)
-router.get("/books",mw.authentication,bookController.getBooks)
+router.get("/books",bookController.getBooks)
 router.delete("/delete/:bookId",mw.authorization,bookController.deletedBook)
 
 router.post("/review",reviewController.createReview)
+router.put("/review/:reviewId",reviewController.updateReview)
+
 module.exports = router;

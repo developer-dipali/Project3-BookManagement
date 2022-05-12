@@ -38,11 +38,11 @@ const getBooks = async function (req, res) {
         let data = req.query
         if (!data) return res.status(400).send({ msg: "data is missing" })
         let a = data.category
-        findData = await bookModel.findOne({
+        findData = await bookModel.find({
             $or:
                 [{ userId: data.userId }, { category: a }, { subcategory: data.subcategory }]
         })
-        if (!findData) return res.status(400).send({ msg: "input data is incorrect" })
+        if (!Object.keys(findData).length) return res.status(400).send({ msg: "input data is incorrect" })
         // console.log(findData)
         res.status(200).send({ msg: findData })
     }
