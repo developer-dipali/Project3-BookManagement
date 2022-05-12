@@ -1,5 +1,4 @@
-const jwt = require('jsonwebtoken')
-const mongoose = require('mongoose')
+const jwt = require('jsonwebtoken');
 const bookModel = require('../model/bookModel');
 
 const authorization = async function (req,res,next){

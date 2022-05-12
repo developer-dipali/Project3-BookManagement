@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken")
 
 
 const createUser = async function (req, res) {
+  try{
 
   let nameRegEx = /^[A-z]*$|^[A-z]+\s[A-z]*$/
   let emailRegEx = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
@@ -57,7 +58,7 @@ const createUser = async function (req, res) {
     return res.status(400).send({ status: false, msg: "Please enter your Password" })
 
 
-  //😍 ======address vaidation========//😍
+  //======address vaidation========//
   if (!validator.isValid(data.address.street))
     return res.status(400).send({ status: false, msg: "Please enter your street Name" })
 
@@ -67,13 +68,12 @@ const createUser = async function (req, res) {
   if (!validator.isValid(data.address.pincode))
     return res.status(400).send({ status: false, msg: "Please enter your pincode Name" })
 
-
-
-
   let saveUser = await userModel.create(data)
   res.status(201).send({ status: true, msg: "User created successfully", data: saveUser })
-}
-//👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽 logIn👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽👽
+}catch (err) {
+  res.status(500).send({ data: err.message })
+}}
+//========================= logIn===============================//
 
 const loginUser = async function (req, res) {
   try {
@@ -83,22 +83,11 @@ const loginUser = async function (req, res) {
     if (!email) return res.status(400).send({ msg: "email required" })
     let password = data.password
     if (!password) return res.status(400).send({ msg: "password required" })
-    let login = await userModel.findOne({ email: email, password: password })
-   // console.log(login)
+    let login = await userModel.findOne({ email: email, password: password, isDeleted: false })
     if (!login) return res.status(400).send({ msg: "email or password does not match" })
 
-
-
   var token = jwt.sign({
-    // "id": login._id, "iat": (new Date().getTime())},
-    // "functionUp",
-    // //  configGeneral.jwt,
-    //   { expiresIn: calculatedExpiresIn })
-
-
-
-        // {let d =new Date()
-       userId : login._id.toString(),
+        userId:login._id,
         project:"book_management",
         organization:"functionUp"
       }, "functionUp_uranium",{expiresIn:"60m"});
