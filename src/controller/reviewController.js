@@ -1,24 +1,95 @@
 const mongoose = require ("mongoose")
 const bookModel = require("../model/bookModel")
 const reviewModel = require ("../model/review")
-//const bookModel =require("../model/bookModel")
+const validator = require ("../validator/validator")
+
+
+//============================================================== Create Review =================================================================//
 
 const createReview = async function (req,res){
-  try{  let data = req.body
-    if (!Object.keys(data).length) return res.status(400).send({msg:"body should not be empty"})
-    if (!data.reviewedBy) return res.status(400).send({msg:"reviewedBy is mandatory"})
-    if(!data.rating) return  res.status(400).send({msg:"rating is missing"})
-    if(!data.bookId) return  res.status(400).send({msg:"bookId doesn't match"})
-    let x = await bookModel.findOne({_id:data.bookId , isDeleted: false})
-    if (!x) return res.status(404).send({msg:"book not found"})
+  try {
+    const params = req.params
+    const bookId = params.bookId
+     
+     //================ BookId validation from params =================//
 
-    let allData = await reviewModel.create(data)
-    res.status(201).send({status:true, msg:allData})
-}
-catch(error){
-    res.status(500).send({msg:error.message})}
-}
+    if (!validator.isValidObjectId(bookId)) {
+        res.status(400).send({ status: false, message: `${bookId} is not a valid book id ` })
+        return
+    }
 
+    let book = await bookModel.find({ _id: bookId, isDeleted: false });
+
+    if (!book) {
+        return res.status(400).send({status:false, message:"No such book exists" });
+    }
+
+    let bookData = req.body;
+
+     //================ BookData validation =================//
+
+    if (!validator.isValidRequestBody(bookData)) {
+        res.status(400).send({ status: true, message: 'No parameters passed. Book unModified' })
+        return
+    }
+
+     //================ extracting parameters  =================//
+      
+     const review = bookData.review
+     const reviewedBy = bookData.reviewedBy
+     const rating = bookData.rating
+     const BookId = bookData.bookId
+
+     //================  BookId validations  =================//
+
+     if (!BookId){
+      return res.status(400).send({ status: false, message: " Please enter Your bookId " })
+     }
+
+       if (!validator.isValidObjectId(BookId)) {
+       return res.status(400).send({ status: false, message: `${bookId} is not a valid book id ` })
+      }
+
+      if (!(params.bookId === bookData.bookId)) {
+        return res.status(400).send({ status: false, message: "BookIds are different " })
+       }
+
+       //================ reviewBy validation =================//
+
+       if (typeof reviewedBy === "string" && reviewedBy.trim().length === 0) {
+        return res.status(400).send({ status: false, Message: "please enter Valid reviewedBy" })
+    }
+    
+    //================ review validation =================//
+
+      if (!validator.isValid(review)) {
+          return res.status(400).send({ status: false, Message: "please enter Valid review" })
+      }
+
+      //================ rating validation =================//
+
+      if (!rating){
+        return res.status(400).send({ status: false, message: " Please enter Your rating " })
+       }
+
+       if(!(rating>=1 && rating<=5)){
+        return res.status(400).send({ status: false, msg: "Rating should be in between 1-5 " })
+        }
+
+         //================ validation End Here ===================//
+
+        const Book = await bookModel.findOneAndUpdate({_id:BookId , isDeleted:false } ,{ $inc:{reviews:1} } , {new:true}) 
+       
+        let BookReview = await reviewModel.create(bookData)
+        res.status(201).send({status:true, Data:{ Book , reviewdata : BookReview}})
+        
+      }
+
+      catch(error){
+    res.status(500).send({ status:false , message:"server error" , msg:error.message})}
+     }
+
+//=============================================================== Update Review ==================================================================//
 
 
 const updateReview = async (req,res)=>{

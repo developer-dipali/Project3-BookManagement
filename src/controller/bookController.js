@@ -146,9 +146,6 @@ let getbookbyId = async function (req, res) {
     try {
         let bookId = req.params.bookId;
 
-        if (!bookId)
-         return res.status(400).send({ status: false, msg:"enter blog id in params"})
-
         if (!validator.isValidObjectId(bookId)) {
          return res.status(400).send({ status: false, msg: "bookId is incorrect" })
         }
@@ -175,8 +172,6 @@ const updateBook = async function (req, res) {
     try {
         const params = req.params
         const bookId = params.bookId
-
-         // ________________________ validation  ____________________//
          
          //================ BookId validation =================//
 
@@ -207,7 +202,7 @@ const updateBook = async function (req, res) {
           let ISBN = bookData.ISBN
 
           
-         //================ BookData validation =================//
+         //================ title validation =================//
 
         if (bookData.title) {
             if (!validator.isValid(bookData.title)) {
@@ -216,14 +211,14 @@ const updateBook = async function (req, res) {
 
             let checkTitle = await bookModel.findOne({ title: bookData.title, isDeletd: false })
             if (checkTitle) {
-                return res.status(400).send("there is already book present with this Title");
+                return res.status(400).send({status:false , message:"there is already book present with this Title"});
             }
         }
 
         //================ excerpt validation =================//
 
         if (bookData.excerpt) {
-            if (!validator.isValid(data.excerpt)) {
+            if (!validator.isValid(excerpt)) {
                 return res.status(400).send({ status: false, Message: "please enter Valid excerpt to update" })
             }
         }

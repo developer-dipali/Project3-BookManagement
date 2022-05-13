@@ -20,6 +20,6 @@ router.put("/books/:bookId",bookController.updateBook)
 
 router.delete("/delete/:bookId",mw.authorization,bookController.deletedBook)
 
-router.post("/review",reviewController.createReview)
+router.post("/books/:bookId/review",reviewController.createReview)
 
 module.exports = router;
