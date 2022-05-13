@@ -55,6 +55,7 @@ const deletedBook = async function (req, res) {
     try {
 
         let data = req.params.bookId
+        
         let dBook = await bookModel.findByIdAndUpdate({ _id: data }, { $set: { isDeleted: true, deletedAt: Date() } }, { new: true })
         res.status(200).send({ data: dBook })
     }
