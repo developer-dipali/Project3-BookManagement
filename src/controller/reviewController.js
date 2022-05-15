@@ -178,105 +178,41 @@ const updateReview = async function (req, res) {
   }
 }
 
-// const updateReview = async function (req, res) {
-//   try {
-//     const bookId = req.params.bookId
-//     const reviewId = req.params.reviewId
-//     const reviewData = req.body;
+///==========================================update Review====================================================//
 
-//     //================ BookId validation =================//
+const deleteReview = async (req, res) => {
+  try {
+    let bookId = req.params.bookId
+    let reviewId = req.params.reviewId
 
-//     if (!validator.isValidObjectId(bookId)) {
-//       return res.status(400).send({ status: false, message: `${bookId} is not a valid book id ` })
-
-//     }
-
-//     let book = await bookModel.find({ _id: bookId, isDeleted: false });
-
-//     if (!book) {
-//       return res.status(400).send({ status: false, message: "No such book exists" });
-//     }
-
-//     //================ reviewId validation =================//
-
-//     if (!validator.isValidObjectId(reviewId)) {
-//       return res.status(400).send({ status: false, message: `${reviewId} is not a valid reviewId ` })
-
-//     }
-
-//     let Review = await reviewModel.findOne({ $and: [{ _id: reviewId, bookId: bookId, isDeleted: false }] });
-
-//     if (!Review) {
-//       return res.status(400).send({ status: false, message: "No such review exists" });
-//     }
-
-//     //  if((book._id != Review._bookId)){
-
-//     //   return res.status(400).send ({msg:"id doesn't match"})}
-//     //     let b =bookId
-//     //     let Re=Review.bookId
-
-//     //  if(b != Re) {return res.status(400).send ({msg:"id doesn't match"})}
+     // book validation  //
+     if (!bookId) return res.status(400).send({msg: "bookId cant be empty"})
+     if (!validator.isValidObjectId(bookId)) return res.status(400).send({ msg: "its not a proper bookId" })
+     let findBook = await bookModel.findOne({ _id:bookId, isDeleted: false })
+     if (!findBook) return res.status(400).send({ msg: "BookId is not active" })
+ 
+    //  let c = findBook._id.toString()
 
 
-//     //================ reviewData validation =================//
+    // review validation  //
+    if (!reviewId) return res.status(400).send({ msg: "reviewId cant be empty" })
+    if (!validator.isValidObjectId(reviewId)) return res.status(400).send({ msg: "Enter valid ReviewId" })
+    let findReview = await reviewModel.findOne({ _id: reviewId, isDeleted: false,bookId:bookId })
+    if (!findReview) return res.status(400).send({ msg: "No such Review Exist" })
 
-//     if (!validator.isValidRequestBody(reviewData)) {
-//       return res.status(400).send({ status: true, message: 'No parameters passed. review unModified' })
+    // let b = findReview.bookId.toString()
 
-//     }
+   
 
-//     //================ extracting params  =================//
+    // if (b !== c) return res.status(400).send({ msg: "id doesn't match,No such Review exist" })
+    let dBook = await bookModel.findOneAndUpdate({ _id: bookId }, { $inc: { reviews: -1 } }, { new: true })
+    console.log(dBook)
+    let dReview = await reviewModel.findOneAndUpdate({ _id: reviewId, isDeleted: false }, { isDeleted: true }, { new: true })
+    return res.status(200).send({msg:"review deleted successfully", Book: dBook})
+  }
+  catch (error) {
+    res.status(500).send({ msg: error.message })
+  }
+}
 
-//     let review = reviewData.review
-//     let rating = reviewData.rating
-//     let reviewedBy = reviewData.reviewedBy
-
-
-
-//     //================review validation =================//
-
-//     if (review) {
-//       if (!validator.isValid(review)) {
-//         return res.status(400).send({ status: false, Message: "please enter Valid review e to update" })
-//       }
-
-//       //     let checkreview  = await reviewModel.findOne({ review :review , isDeletd: false })
-//       //     if (checkreview) {
-//       //         return res.status(400).send({status:false , message:"there is review   present with this Title"});
-//       //     }
-//       // }
-
-//       //================rating validation =================//
-
-//       // if(!rating){
-
-//       //         return res.status(400).send({ status: false, Message: "please enter Valid excerpt to update" })
-//       //     }
-//       // // }
-//       //================ reviewedBy validation =================//
-
-//       if (reviewedBy) {
-//         if (!validator.isValid(reviewedBy)) {
-//           return res.status(400).send({ status: false, Message: "please enter Valid  reviewedBy to update" })
-//         }
-//       }
-
-
-//       //================ Validation Ends Here =================//
-
-
-
-//       let updatedreview = await reviewModel.findOneAndUpdate({ _id: reviewId }, reviewData, { new: true });
-//       console.log(updateReview)
-//       return res.status(201).send({ status: true, data: updatedreview });
-
-//     }
-//   }
-//   catch (err) {
-//     console.log("this is the error:", err.message)
-//     return res.status(500).send({ msg: "error", error: err.message })
-//   }
-// }
-
-module.exports = { createReview, updateReview }
+module.exports = { createReview, updateReview,deleteReview}
