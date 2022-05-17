@@ -16,7 +16,7 @@ const createUser = async function (req, res) {
 
     let data = req.body;
     if (!validator.isValidRequestBody(data))
-      return res.status(400).send({ status: false, msg: "Please enter some data to create Intern Details." })
+      return res.status(400).send({ status: false, msg: "Please enter some data to create user Details." })
 
     //=============== title validation ==================//
 
@@ -55,15 +55,20 @@ const createUser = async function (req, res) {
     if (!data.email.trim().match(emailRegEx))
       return res.status(400).send({ status: false, msg: "Enter a Valid EmailId." })
 
+
     let email = await userModel.findOne({ email: data.email, isDeleted: false })
     if (email)
       return res.status(400).send({ status: false, msg: "emailId already register" })
 
     //=============== Password Validation ================//
 
-    if (!validator.isValid(data.password))
+    if (!validator.isValid(data.password)){
       return res.status(400).send({ status: false, msg: "Please enter your Password" })
-
+    }
+    
+     if (!(data.password.length >= 8 && data.password.length <= 15)) {
+     return res.status(400).send({ status: false, message: "Password must be in 8 to 15 characters" })
+     }
     //============== address vaidation =================//
 
     if (!validator.isValid(data.address.street))
@@ -105,6 +110,9 @@ const loginUser = async function (req, res) {
 
     if (!password) 
     return res.status(400).send({ status: false, msg: "please enter your password" })
+    if (!(password.length >= 8 && password.length <= 15)) {
+      return res.status(400).send({ status: false, message: "Password must be in 8 to 15 characters" })
+    }
 
     let login = await userModel.findOne({ email: email, password: password, isDeleted: false })
 
@@ -115,11 +123,10 @@ const loginUser = async function (req, res) {
 
     var token = jwt.sign({
       userId: login._id,
-      project: "book_management",
-      organization: "functionUp"
+      project: "book_management"
     }, "functionUp_uranium", { expiresIn: "60m" });
 
-    res.setHeader("my-api-key", token)
+    res.setHeader("x-api-key", token)
 
     res.status(200).send({ status: true, msg: "login successful", email, password, data: token })
   }

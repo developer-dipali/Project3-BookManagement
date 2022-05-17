@@ -178,7 +178,7 @@ const updateReview = async function (req, res) {
   }
 }
 
-///==========================================update Review====================================================//
+///==========================================delete Review====================================================//
 
 const deleteReview = async (req, res) => {
   try {
@@ -191,7 +191,7 @@ const deleteReview = async (req, res) => {
      let findBook = await bookModel.findOne({ _id:bookId, isDeleted: false })
      if (!findBook) return res.status(400).send({ msg: "BookId is not active" })
  
-    //  let c = findBook._id.toString()
+  
 
 
     // review validation  //
@@ -200,11 +200,9 @@ const deleteReview = async (req, res) => {
     let findReview = await reviewModel.findOne({ _id: reviewId, isDeleted: false,bookId:bookId })
     if (!findReview) return res.status(400).send({ msg: "No such Review Exist" })
 
-    // let b = findReview.bookId.toString()
-
    
 
-    // if (b !== c) return res.status(400).send({ msg: "id doesn't match,No such Review exist" })
+   
     let dBook = await bookModel.findOneAndUpdate({ _id: bookId }, { $inc: { reviews: -1 } }, { new: true })
     console.log(dBook)
     let dReview = await reviewModel.findOneAndUpdate({ _id: reviewId, isDeleted: false }, { isDeleted: true }, { new: true })
@@ -215,4 +213,4 @@ const deleteReview = async (req, res) => {
   }
 }
 
-module.exports = { createReview, updateReview,deleteReview}
+module.exports = { createReview,updateReview,deleteReview}
